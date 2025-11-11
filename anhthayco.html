@@ -6,20 +6,65 @@
   <style>
     body {
       display: flex;
+      flex-direction: column; /* xếp từ trên xuống dưới */
       justify-content: center;
       align-items: center;
       height: 100vh;
       margin: 0;
       font-family: 'Roboto', sans-serif;
       background-color: #fff;
+      position: relative;
     }
+
     h1 {
       font-size: 3rem;
       color: #2c3e50;
+      text-align: center;
+      margin-bottom: 50px; /* tạo khoảng cách với mũi tên */
+    }
+
+    /* --- Mũi tên dưới trang --- */
+    .arrow-down {
+      position: absolute;
+      bottom: 30px; /* cách đáy 30px */
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 3rem;
+      font-weight: bold;
+      color: #2c3e50;
+      cursor: pointer;
+      text-decoration: none;
+
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      line-height: 70px; /* căn giữa ký tự */
+      transition: all 0.3s ease;
+      border: 2px solid #2c3e50; /* viền mặc định */
+    }
+
+    .arrow-down:hover {
+      background-color: #24c6dc; /* màu nổi bật khi hover */
+      color: #fff; /* chữ trắng */
+      transform: translateX(-50%) scale(1.2); /* phóng to nhẹ */
+      box-shadow: 0 0 15px rgba(36,198,220,0.6); /* ánh sáng nổi bật */
+      border-color: #24c6dc; /* đổi viền khi hover */
+    }
+
+    /* span giúp căn chính xác ký tự mũi tên */
+    .arrow-down span {
+      display: inline-block;
+      transform: translateY(-1px);
     }
   </style>
 </head>
 <body>
   <h1>Đây là trang chứa ảnh nhân vật</h1>
+
+  <!-- Mũi tên xuống dưới, dẫn đến trang trắng khác -->
+  <a href="book.html" class="arrow-down"><span>&#8595;</span></a>
 </body>
 </html>
