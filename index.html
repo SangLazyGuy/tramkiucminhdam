@@ -93,6 +93,15 @@ if(savedTime) {
   audio.currentTime = parseFloat(savedTime);
 }
 
+    function playAudio() {
+    audio.play().catch(()=>{});
+    // loại bỏ listener sau khi play lần đầu
+    window.removeEventListener("click", playAudio);
+}
+
+// Đợi người dùng click để play
+window.addEventListener("click", playAudio);
+    
 // Play nhạc, tránh lỗi autoplay trên mobile
 audio.play().catch(()=>{});
 
