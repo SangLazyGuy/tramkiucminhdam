@@ -3,7 +3,26 @@
 <head>
 <meta charset="UTF-8">
 <title>Sách lật chuẩn Canva</title>
-<iframe src="music.html" style="display:none;" allow="autoplay"></iframe>
+<audio id="bgMusic" loop>
+  <source src="nhacnen.mp3" type="audio/mpeg">
+</audio>
+<script>
+const audio = document.getElementById("bgMusic");
+
+// Khi load trang, lấy vị trí nhạc từ localStorage
+const savedTime = localStorage.getItem("bgMusicTime");
+if(savedTime) {
+  audio.currentTime = parseFloat(savedTime);
+}
+
+// Play nhạc, tránh lỗi autoplay trên mobile
+audio.play().catch(()=>{});
+
+// Trước khi rời trang, lưu lại vị trí nhạc
+window.addEventListener("beforeunload", () => {
+  localStorage.setItem("bgMusicTime", audio.currentTime);
+});
+</script>
 <style>
 html, body {
   margin:0; padding:0;
