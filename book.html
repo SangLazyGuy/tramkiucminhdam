@@ -28,7 +28,7 @@ html, body {
   position: relative;
   height: 80vh;
   width: 45vw;
-  perspective: 2000px;
+  perspective: 1500px; /* Giảm perspective để gần hơn */
   transform: translateY(17%) translateX(-11%);
 }
 
@@ -36,6 +36,7 @@ html, body {
   position: relative;
   height: 100%;
   width: 100%;
+  transform-style: preserve-3d;
 }
 
 .page {
@@ -44,12 +45,21 @@ html, body {
   left: 0;
   transform-style: preserve-3d;
   transform-origin: left center;
-  transition: transform 0.9s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: transform 1.2s ease-out, box-shadow 1.2s ease-out; /* Chậm hơn, mượt hơn */
   cursor: pointer;
 }
 
 .page.flipped {
   transform: rotateY(-180deg);
+}
+
+/* Thêm shadow động khi lật */
+.page:hover {
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+}
+
+.page.flipped {
+  box-shadow: -5px 5px 20px rgba(0, 0, 0, 0.2);
 }
 
 .page-side {
