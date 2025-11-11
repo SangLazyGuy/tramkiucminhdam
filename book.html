@@ -2,67 +2,102 @@
 <html lang="vi">
 <head>
 <meta charset="UTF-8">
-<title>Sách lật chuẩn Canva</title>
-<audio id="bgMusic" loop autoplay>
+<title>Flipbook Hoàn Chỉnh</title>
+<audio id="bgMusic" loop>
   <source src="nhacnen.mp3" type="audio/mpeg">
 </audio>
 <style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
 html, body {
-  margin:0; padding:0;
-  width:100%; height:100%;
-  background:#fffacd;
-  font-family:sans-serif;
-  overflow:hidden;
-  display:flex; justify-content:flex-end; align-items:center;
+  width: 100%;
+  height: 100%;
+  background: #fffacd;
+  font-family: sans-serif;
+  overflow: hidden;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
 }
 
 .book-container {
-  position:relative;
-  height:80vh; /* chiều cao max */
-  perspective:2000px;
-  width:45vw; /* ban đầu chiếm 45% viewport */
-  transition: width 0.6s ease; /* mở ra 90% */
+  position: relative;
+  height: 80vh;
+  width: 45vw;
+  perspective: 2000px;
   transform: translateY(17%) translateX(-11%);
 }
 
 .book {
-  position:relative;
-  height:100%;
+  position: relative;
+  height: 100%;
+  width: 100%;
 }
 
-/* Trang sách */
 .page {
-  position:absolute;
-  top:0;
-  left:0;
-  border:2px solid #333;
-  border-radius:8px;
-  box-shadow:0 5px 15px rgba(0,0,0,0.2);
-  overflow:hidden;
-  transform-style:preserve-3d;
-  transform-origin:left center;
-  transition:transform 0.9s cubic-bezier(0.4,0,0.2,1);
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform-style: preserve-3d;
+  transform-origin: left center;
+  transition: transform 0.9s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
 }
 
-/* Mặt trước/sau */
-.face {
-  position:absolute; inset:0;
-  backface-visibility:hidden;
-}
-
-.face img {
-  width:100%;
-  height:100%;
-  object-fit:cover; /* full ảnh, không viền trắng */
-}
-
-.face.back {
-  transform:rotateY(180deg);
-}
-
-/* Flipped */
 .page.flipped {
-  transform:rotateY(-180deg);
+  transform: rotateY(-180deg);
+}
+
+.page-side {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  border: 2px solid #333;
+  border-radius: 8px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+}
+
+.page-front {
+  z-index: 2;
+}
+
+.page-back {
+  transform: rotateY(180deg);
+  -webkit-transform: rotateY(180deg);
+}
+
+.page-side img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.cover-text {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 3rem;
+  font-weight: bold;
+  color: white;
+  background: red;
+}
+
+.cover-back-text {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: yellow;
+  background: blue;
 }
 </style>
 </head>
@@ -73,39 +108,58 @@ html, body {
 </div>
 
 <script>
-// ==== Tỉ lệ slide Canva 1123x794
 const slideRatio = 1123 / 794;
 
-// ==== Dữ liệu các trang
 const pagesData = [
   { front: "a.jpg", back: "b.jpg" },
-  { front: "f.jpg", back: "f.jpg" }
+  { front: "c.jpg", back: "d.jpg" }
 ];
-
-// ==== Bìa trước/sau
-const coverFrontImg = "f.jpg";
-const coverBackImg = "f.jpg";
 
 const book = document.getElementById("book");
 const container = document.getElementById("bookContainer");
 const pages = [];
 let topZ = 1000;
 
-// ===== Tạo trang
-function createPage(frontSrc, backSrc, isCover=false){
+// ===== Tạo bìa trước =====
+function createCoverFront() {
   const page = document.createElement("div");
-  page.className="page";
-  if(isCover) page.style.zIndex = topZ+1000; // bìa luôn trên cùng
-  else page.style.zIndex = topZ++;
+  page.className = "page";
+  page.style.zIndex = topZ + 1000;
 
   const front = document.createElement("div");
-  front.className="face front";
+  front.className = "page-side page-front cover-text";
+  front.innerText = "2023-2026";
+
+  const back = document.createElement("div");
+  back.className = "page-side page-back cover-back-text";
+  back.innerText = "KỶ NIỆM";
+
+  page.appendChild(front);
+  page.appendChild(back);
+  
+  page.addEventListener("click", () => {
+    page.classList.toggle("flipped");
+    page.style.zIndex = topZ++;
+  });
+
+  book.appendChild(page);
+  pages.push(page);
+}
+
+// ===== Tạo trang giữa =====
+function createPage(frontSrc, backSrc) {
+  const page = document.createElement("div");
+  page.className = "page";
+  page.style.zIndex = topZ++;
+
+  const front = document.createElement("div");
+  front.className = "page-side page-front";
   const imgFront = document.createElement("img");
   imgFront.src = frontSrc;
   front.appendChild(imgFront);
 
   const back = document.createElement("div");
-  back.className="face back";
+  back.className = "page-side page-back";
   const imgBack = document.createElement("img");
   imgBack.src = backSrc;
   back.appendChild(imgBack);
@@ -113,57 +167,61 @@ function createPage(frontSrc, backSrc, isCover=false){
   page.appendChild(front);
   page.appendChild(back);
 
+  page.addEventListener("click", () => {
+    page.classList.toggle("flipped");
+    page.style.zIndex = topZ++;
+  });
+
   book.appendChild(page);
   pages.push(page);
 }
 
-// ===== Tạo bìa trước
-createPage(coverFrontImg, coverFrontImg, true);
+// ===== Tạo bìa sau =====
+function createCoverBack() {
+  const page = document.createElement("div");
+  page.className = "page";
+  page.style.zIndex = topZ - 500;
 
-// ===== Tạo các trang giữa
-pagesData.forEach(p => createPage(p.front, p.back));
+  const front = document.createElement("div");
+  front.className = "page-side page-front";
+  front.style.background = "red";
 
-// ===== Tạo bìa sau
-createPage(coverBackImg, coverBackImg, true);
+  const back = document.createElement("div");
+  back.className = "page-side page-back";
+  back.style.background = "red";
 
-// ===== Flip từng trang
-pages.forEach((page)=>{
-  page.addEventListener("click", ()=>{
+  page.appendChild(front);
+  page.appendChild(back);
+
+  page.addEventListener("click", () => {
     page.classList.toggle("flipped");
     page.style.zIndex = topZ++;
-    container.classList.add("open");
   });
-});
 
-// ===== Responsive: set chiều cao theo tỉ lệ slide
-function resizePages(){
+  book.appendChild(page);
+  pages.push(page);
+}
+
+// ===== Khởi tạo sách =====
+createCoverFront();
+pagesData.forEach(p => createPage(p.front, p.back));
+createCoverBack();
+
+// ===== Responsive =====
+function resizePages() {
   const width = container.clientWidth;
   const height = width / slideRatio;
-  pages.forEach(page=>{
-    page.style.width = width+"px";
-    page.style.height = height+"px";
+  pages.forEach(page => {
+    page.style.width = width + "px";
+    page.style.height = height + "px";
   });
 }
-
 window.addEventListener("resize", resizePages);
 resizePages();
-</script>
-  <script>
+
+// ===== Nhạc nền =====
 const audio = document.getElementById("bgMusic");
-
-// Khi load trang, lấy vị trí nhạc từ localStorage
-const savedTime = localStorage.getItem("bgMusicTime");
-if(savedTime) {
-  audio.currentTime = parseFloat(savedTime);
-}
-
-// Play nhạc, tránh lỗi autoplay trên mobile
-audio.play().catch(()=>{});
-
-// Trước khi rời trang, lưu lại vị trí nhạc
-window.addEventListener("beforeunload", () => {
-  localStorage.setItem("bgMusicTime", audio.currentTime);
-});
+audio.play().catch(() => {});
 </script>
 
 </body>
