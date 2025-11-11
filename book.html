@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>Sách lật chuẩn Canva</title>
+<iframe src="music.html" style="display:none;" allow="autoplay"></iframe>
 <style>
 html, body {
   margin:0; padding:0;
@@ -64,11 +65,6 @@ html, body {
 </style>
 </head>
 <body>
-
-<!-- === Nhạc nền ẩn === -->
-<audio id="bgMusic" loop autoplay>
-  <source src="nhacnen.mp3" type="audio/mpeg">
-</audio>
 
 <div class="book-container" id="bookContainer">
   <div class="book" id="book"></div>
@@ -133,12 +129,7 @@ pages.forEach((page)=>{
   page.addEventListener("click", ()=>{
     page.classList.toggle("flipped");
     page.style.zIndex = topZ++;
-    // Khi flip bất kỳ trang nào → mở container 90%
     container.classList.add("open");
-
-    // === Play nhạc nếu trình duyệt chặn autoplay trên điện thoại ===
-    const audio = document.getElementById("bgMusic");
-    if(audio.paused) audio.play();
   });
 });
 
