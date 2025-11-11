@@ -1,1 +1,153 @@
 
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<title>Sách lật chuẩn Canva</title>
+<style>
+html, body {
+  margin:0; padding:0;
+  width:100%; height:100%;
+  background:#fffacd;
+  font-family:sans-serif;
+  overflow:hidden;
+  display:flex; justify-content:flex-end; align-items:center;
+}
+
+.book-container {
+  position:relative;
+  height:80vh; /* chiều cao max */
+  perspective:2000px;
+  width:45vw; /* ban đầu chiếm 45% viewport */
+  transition: width 0.6s ease; /* mở ra 90% */
+  transform: translateY(17%) translateX(-11%);
+}
+
+.book {
+  position:relative;
+  height:100%;
+}
+
+/* Trang sách */
+.page {
+  position:absolute;
+  top:0;
+  left:0;
+  border:2px solid #333;
+  border-radius:8px;
+  box-shadow:0 5px 15px rgba(0,0,0,0.2);
+  overflow:hidden;
+  transform-style:preserve-3d;
+  transform-origin:left center;
+  transition:transform 0.9s cubic-bezier(0.4,0,0.2,1);
+}
+
+/* Mặt trước/sau */
+.face {
+  position:absolute; inset:0;
+  backface-visibility:hidden;
+}
+
+.face img {
+  width:100%;
+  height:100%;
+  object-fit:cover; /* full ảnh, không viền trắng */
+}
+
+.face.back {
+  transform:rotateY(180deg);
+}
+
+/* Flipped */
+.page.flipped {
+  transform:rotateY(-180deg);
+}
+</style>
+</head>
+<body>
+
+<div class="book-container" id="bookContainer">
+  <div class="book" id="book"></div>
+</div>
+
+<script>
+// ==== Tỉ lệ slide Canva 1123x794
+const slideRatio = 1123 / 794;
+
+// ==== Dữ liệu các trang
+const pagesData = [
+  { front: "slide1_front.jpg", back: "slide1_back.jpg" },
+  { front: "slide2_front.jpg", back: "slide2_back.jpg" },
+  { front: "slide3_front.jpg", back: "slide3_back.jpg" }
+];
+
+// ==== Bìa trước/sau
+const coverFrontImg = "bia_truoc.jpg";
+const coverBackImg = "bia_sau.jpg";
+
+const book = document.getElementById("book");
+const container = document.getElementById("bookContainer");
+const pages = [];
+let topZ = 1000;
+
+// ===== Tạo trang
+function createPage(frontSrc, backSrc, isCover=false){
+  const page = document.createElement("div");
+  page.className="page";
+  if(isCover) page.style.zIndex = topZ+1000; // bìa luôn trên cùng
+  else page.style.zIndex = topZ++;
+
+  const front = document.createElement("div");
+  front.className="face front";
+  const imgFront = document.createElement("img");
+  imgFront.src = frontSrc;
+  front.appendChild(imgFront);
+
+  const back = document.createElement("div");
+  back.className="face back";
+  const imgBack = document.createElement("img");
+  imgBack.src = backSrc;
+  back.appendChild(imgBack);
+
+  page.appendChild(front);
+  page.appendChild(back);
+
+  book.appendChild(page);
+  pages.push(page);
+}
+
+// ===== Tạo bìa trước
+createPage(coverFrontImg, coverFrontImg, true);
+
+// ===== Tạo các trang giữa
+pagesData.forEach(p => createPage(p.front, p.back));
+
+// ===== Tạo bìa sau
+createPage(coverBackImg, coverBackImg, true);
+
+// ===== Flip từng trang
+pages.forEach((page)=>{
+  page.addEventListener("click", ()=>{
+    page.classList.toggle("flipped");
+    page.style.zIndex = topZ++;
+    // Khi flip bất kỳ trang nào → mở container 90%
+    container.classList.add("open");
+  });
+});
+
+// ===== Responsive: set chiều cao theo tỉ lệ slide
+function resizePages(){
+  const width = container.clientWidth;
+  const height = width / slideRatio;
+  pages.forEach(page=>{
+    page.style.width = width+"px";
+    page.style.height = height+"px";
+  });
+}
+
+window.addEventListener("resize", resizePages);
+resizePages();
+</script>
+
+</body>
+</html>
