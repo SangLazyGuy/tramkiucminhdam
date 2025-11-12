@@ -241,10 +241,19 @@ if(savedTime) {
 // Play nhạc, tránh lỗi autoplay trên mobile
 audio.play().catch(() => {});
 
-// Trước khi rời trang, lưu lại vị trí nhạc
-window.addEventListener("beforeunload", () => {
+// Hàm lưu vị trí nhạc
+function saveAudioTime() {
   localStorage.setItem("bgMusicTime", audio.currentTime);
-});
+}
+
+// Lưu vị trí khi rời trang (desktop)
+window.addEventListener("beforeunload", saveAudioTime);
+
+// Lưu vị trí khi rời trang (mobile - quan trọng!)
+window.addEventListener("pagehide", saveAudioTime);
+
+// Lưu định kỳ mỗi 2 giây để đảm bảo
+setInterval(saveAudioTime, 2000);
 </script>
 
 </body>
