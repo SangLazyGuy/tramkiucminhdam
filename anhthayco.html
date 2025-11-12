@@ -66,28 +66,39 @@
   <script>
 const audio = document.getElementById("bgMusic");
 
-// Khi load trang, lấy vị trí nhạc từ localStorage
-const savedTime = localStorage.getItem("bgMusicTime");
-if(savedTime) {
-  audio.currentTime = parseFloat(savedTime);
+function restoreAudioTime() {
+  const savedTime = localStorage.getItem("bgMusicTime");
+  if (savedTime) {
+    audio.currentTime = parseFloat(savedTime);
+  }
 }
 
-// Play nhạc, tránh lỗi autoplay trên mobile
-audio.play().catch(()=>{});
+// Khi file nhạc đã load metadata, đặt lại thời gian
+audio.addEventListener("loadedmetadata", restoreAudioTime);
+
+// Khi quay lại từ cache (Back/Forward)
+window.addEventListener("pageshow", (e) => {
+  if (e.persisted) {
+    restoreAudioTime();
+    audio.play().catch(()=>{});
+  }
+});
+
+// Phát nhạc, tránh lỗi autoplay trên mobile
+audio.play().catch(() => {});
 
 // Hàm lưu vị trí nhạc
 function saveAudioTime() {
   localStorage.setItem("bgMusicTime", audio.currentTime);
 }
 
-// Lưu vị trí khi rời trang (desktop)
+// Lưu khi rời trang hoặc ẩn trang
 window.addEventListener("beforeunload", saveAudioTime);
-
-// Lưu vị trí khi rời trang (mobile - quan trọng!)
 window.addEventListener("pagehide", saveAudioTime);
 
-// Lưu định kỳ mỗi 2 giây để đảm bảo
+// Lưu định kỳ 2 giây/lần
 setInterval(saveAudioTime, 2000);
+
 </script>
 </body>
 </html>
