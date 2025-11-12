@@ -83,7 +83,7 @@ html, body {
   -webkit-transform: rotateY(180deg);
 }
 
-.page-side img {
+.page-side img, .page-side video {
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -121,8 +121,9 @@ html, body {
 const slideRatio = 1123 / 794;
 
 const pagesData = [
-  { front: "a.jpg", back: "b.jpg" },
-  { front: "c.jpg", back: "d.jpg" }
+  { front: "video1.mp4", back: "a.jpg", type: "video" },
+  { front: "b.jpg", back: "c.jpg" },
+  { front: "d.jpg", back: "e.jpg" }, // Mặt sau là video
 ];
 
 const book = document.getElementById("book");
@@ -156,23 +157,47 @@ function createCoverFront() {
   pages.push(page);
 }
 
-// ===== Tạo trang giữa =====
-function createPage(frontSrc, backSrc) {
+// ===== Tạo trang giữa - hỗ trợ cả ảnh và video =====
+function createPage(frontSrc, backSrc, frontType = "image", backType = "image") {
   const page = document.createElement("div");
   page.className = "page";
   page.style.zIndex = topZ++;
 
+  // Tạo mặt trước
   const front = document.createElement("div");
   front.className = "page-side page-front";
-  const imgFront = document.createElement("img");
-  imgFront.src = frontSrc;
-  front.appendChild(imgFront);
+  
+  if (frontType === "video") {
+    const videoFront = document.createElement("video");
+    videoFront.src = frontSrc;
+    videoFront.autoplay = true;
+    videoFront.loop = true;
+    videoFront.muted = true; // Tắt tiếng để autoplay hoạt động
+    videoFront.playsInline = true; // Quan trọng cho mobile
+    front.appendChild(videoFront);
+  } else {
+    const imgFront = document.createElement("img");
+    imgFront.src = frontSrc;
+    front.appendChild(imgFront);
+  }
 
+  // Tạo mặt sau
   const back = document.createElement("div");
   back.className = "page-side page-back";
-  const imgBack = document.createElement("img");
-  imgBack.src = backSrc;
-  back.appendChild(imgBack);
+  
+  if (backType === "video") {
+    const videoBack = document.createElement("video");
+    videoBack.src = backSrc;
+    videoBack.autoplay = true;
+    videoBack.loop = true;
+    videoBack.muted = true;
+    videoBack.playsInline = true;
+    back.appendChild(videoBack);
+  } else {
+    const imgBack = document.createElement("img");
+    imgBack.src = backSrc;
+    back.appendChild(imgBack);
+  }
 
   page.appendChild(front);
   page.appendChild(back);
@@ -214,7 +239,11 @@ function createCoverBack() {
 
 // ===== Khởi tạo sách =====
 createCoverFront();
-pagesData.forEach(p => createPage(p.front, p.back));
+pagesData.forEach(p => {
+  const frontType = p.type || "image";
+  const backType = p.backType || "image";
+  createPage(p.front, p.back, frontType, backType);
+});
 createCoverBack();
 
 // ===== Responsive =====
