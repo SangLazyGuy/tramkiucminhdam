@@ -84,7 +84,7 @@ window.addEventListener("pagehide", saveAudioTime);
 // Lưu định kỳ 2 giây/lần
 setInterval(saveAudioTime, 2000);
 </script>
-  <script>
+<script>
 function setupAllVideos() {
     const videoPages = document.querySelectorAll(".page.video-page");
 
@@ -94,21 +94,22 @@ function setupAllVideos() {
 
         if (!video || !seek) return;
 
-        // BẮT BUỘC để video chạy được trong Chrome
+        // Chrome cho play mà không bị chặn
         video.muted = true;
         video.playsInline = true;
 
+        // Set max cho seekbar
         video.addEventListener("loadedmetadata", () => {
             seek.max = video.duration;
         });
 
-        // Điều khiển video khi kéo seekbar
+        // Seek → đổi thời gian → play ngay
         seek.addEventListener("input", () => {
             video.currentTime = seek.value;
             video.play();
         });
 
-        // UPDATE MƯỢT 60FPS – không trễ
+        // Đồng bộ 60fps (không lag)
         function updateSeekBar() {
             if (!video.paused) {
                 seek.value = video.currentTime;
@@ -118,7 +119,26 @@ function setupAllVideos() {
         requestAnimationFrame(updateSeekBar);
     });
 
-    // Stop video khi lật trang
+    // Tự động PLAY khi lật tới trang video
+    $(".flipbook").bind("turned", function(event, pageNumber){
+        const pages = document.querySelectorAll(".page.video-page");
+        
+        pages.forEach((page, index) => {
+            const realPage = index + 1;
+            const video = page.querySelector("video");
+
+            if (!video) return;
+
+            if (realPage === pageNumber) {
+                video.currentTime = 0;  // chạy lại từ đầu
+                video.play();           // auto play
+            } else {
+                video.pause();
+            }
+        });
+    });
+
+    // Tạm dừng tất cả video khi đang lật
     $(".flipbook").bind("turning", function () {
         document.querySelectorAll("video").forEach(v => v.pause());
     });
@@ -126,6 +146,7 @@ function setupAllVideos() {
 
 setupAllVideos();
 </script>
+
 
 </body>
 
