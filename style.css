@@ -17,8 +17,8 @@ body {
 }
 
 .flipbook {
-    width: 1250px;
-    height: 400px;
+    width: 1123px;
+    height: 450px;
 }
 
 .flipbook .hard {
@@ -65,5 +65,23 @@ body {
 	font-size: 14px;
     margin-bottom: 10px;
 }
+/* XÓA nút play/pause, mute, volume, fullscreen */
+video::-webkit-media-controls-play-button,
+video::-webkit-media-controls-volume-control-container,
+video::-webkit-media-controls-mute-button,
+video::-webkit-media-controls-fullscreen-button,
+video::-webkit-media-controls-timeline-container
+{
+    display: none !important;
+}
+
+/* Chỉ giữ thanh timeline */
+video::-webkit-media-controls-timeline {
+    display: block !important;
+    margin-left: 0;
+    margin-right: 0;
+}
+
+
 
 
