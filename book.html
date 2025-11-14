@@ -95,28 +95,30 @@ function setupAllVideos() {
 
         if (!video || !seek) return;
 
-        // Load metadata -> đặt đúng số nấc
+        const precision = 10;  // 1 giây = 10 nấc => 0.1s / bước
+
+        // Khi load metadata → set số nấc
         video.addEventListener("loadedmetadata", () => {
-            seek.max = Math.floor(video.duration);  // đủ số nấc theo giây
+            seek.max = Math.floor(video.duration * precision);
             seek.value = 0;
         });
 
-        // Click video để play/pause
+        // Click video = play/pause
         video.addEventListener("click", () => {
             if (video.paused) video.play();
             else video.pause();
         });
 
-        // Kéo seekbar => nhảy thời gian + chạy tiếp
+        // Kéo seekbar → nhảy đúng thời gian + play
         seek.addEventListener("input", () => {
-            video.currentTime = seek.value;
+            video.currentTime = seek.value / precision;
             video.play();
         });
 
-        // Seekbar đi theo video (60fps)
+        // Seekbar chạy mượt theo video (60fps)
         function updateSeek() {
             if (!video.paused) {
-                seek.value = Math.floor(video.currentTime);
+                seek.value = Math.floor(video.currentTime * precision);
             }
             requestAnimationFrame(updateSeek);
         }
@@ -125,7 +127,6 @@ function setupAllVideos() {
 }
 
 setupAllVideos();
-
 </script>
 
 
