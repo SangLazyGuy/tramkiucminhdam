@@ -15,27 +15,21 @@
 <body>
 
   <div class="flipbook">
+    <div class="hard">My Pokemon Gallery <small>~ HankTheTank</small></div>
+    <div class="hard"></div>
 
-      <!-- Trang 1 -->
-      <div class="hard">My Pokemon Gallery <small>~ HankTheTank</small></div>
+    <!-- TRANG VIDEO -->
+    <div class="page video-placeholder" data-video="video1"></div>
 
-      <!-- Trang 2 -->
-      <div class="hard"></div>
+    <!-- IMAGE PAGES -->
+    <div><img src="a.jpg" /></div>
+    <div><img src="a.jpg" /></div>
+    <div><img src="b.jpg" /></div>
+    <div><img src="c.jpg" /></div>
+    <div><img src="d.jpg" /></div>
 
-      <!-- Trang 3 (VIDEO) -->
-      <div class="page video-page video-placeholder" data-video="video1"></div>
-
-      <!-- Trang 4+ (ẢNH) — đúng chuẩn -->
-      <div class="page"><img src="a.jpg" /></div>
-      <div class="page"><img src="a.jpg" /></div>
-      <div class="page"><img src="b.jpg" /></div>
-      <div class="page"><img src="c.jpg" /></div>
-      <div class="page"><img src="d.jpg" /></div>
-
-      <!-- Trang cuối -->
-      <div class="hard"></div>
-      <div class="hard">Thank You <small>~ HankTheTank</small></div>
-
+    <div class="hard"></div>
+    <div class="hard">Thank You <small>~ HankTheTank</small></div>
   </div>
 
   <!-- VIDEO OVERLAY -->
@@ -44,67 +38,92 @@
     <input type="range" id="seek1" class="seekbar" value="0" min="0" max="100">
   </div>
 
-  <!-- Scripts -->
+  <!-- LIBRARIES -->
   <script src="jquery.js"></script>
   <script src="turn.js"></script>
 
+  <!-- INIT BOOK -->
   <script>
     $(".flipbook").turn();
   </script>
 
-  <!-- Giữ nhạc -->
+  <!-- AUDIO MEMORY -->
   <script>
     const audio = document.getElementById("bgMusic");
+
     function restoreAudioTime() {
       const saved = localStorage.getItem("bgMusicTime");
       if (saved) audio.currentTime = parseFloat(saved);
     }
+
     audio.addEventListener("loadedmetadata", restoreAudioTime);
-    audio.play().catch(()=>{});
-    window.addEventListener("beforeunload", ()=> {
-      localStorage.setItem("bgMusicTime", audio.currentTime);
+
+    window.addEventListener("pageshow", (e) => {
+      if (e.persisted) {
+        restoreAudioTime();
+        audio.play().catch(() => {});
+      }
     });
+
+    audio.play().catch(() => {});
+    function saveAudio() { localStorage.setItem("bgMusicTime", audio.currentTime); }
+
+    window.addEventListener("beforeunload", saveAudio);
+    window.addEventListener("pagehide", saveAudio);
+
+    setInterval(saveAudio, 2000);
   </script>
 
-  <!-- VIDEO OVERLAY SCRIPT -->
+  <!-- VIDEO LOGIC HOÀN CHỈNH -->
   <script>
     $(".flipbook").turn({
       when: {
         turned: function (e, page) {
 
-          const vc = document.getElementById("video-container");
-          vc.style.display = "none";
+          const VC = document.getElementById("video-container");
+          VC.classList.remove("active");
 
-          const pageEl = $(".flipbook .page").eq(page - 1);
+          const pageEl = $(".flipbook").children().eq(page - 1);
           const videoId = pageEl.data("video");
 
-          if (videoId) {
-              const rect = pageEl[0].getBoundingClientRect();
+          if (!videoId) return;
 
-              vc.style.left = rect.left + "px";
-              vc.style.top = rect.top + "px";
-              vc.style.display = "block";
+          const rect = pageEl[0].getBoundingClientRect();
+          VC.style.left = rect.left + "px";
+          VC.style.top = rect.top + "px";
+          VC.style.width = rect.width + "px";
+          VC.style.height = rect.height + "px";
 
-              const video = document.getElementById(videoId);
-              const seek = document.getElementById("seek1");
+          VC.classList.add("active");
 
-              video.currentTime = 0;
-              video.play();
+          const video = document.getElementById(videoId);
+          const seek = document.getElementById("seek1");
 
-              video.onloadedmetadata = () => {
-                seek.max = Math.floor(video.duration * 10);
-              };
+          video.pause();
+          video.currentTime = 0;
 
-              seek.oninput = () => {
-                video.currentTime = seek.value / 10;
-              };
+          video.muted = true;     /* đảm bảo autoplay không bị chặn */
+          video.play().catch(() => {});
 
-              function updateSeek() {
-                seek.value = Math.floor(video.currentTime * 10);
-                requestAnimationFrame(updateSeek);
-              }
-              updateSeek();
+          const precision = 10;
+
+          if (video.readyState >= 1) {
+            seek.max = Math.floor(video.duration * precision);
+          } else {
+            video.onloadedmetadata = () => {
+              seek.max = Math.floor(video.duration * precision);
+            };
           }
+
+          seek.oninput = () => {
+            video.currentTime = seek.value / precision;
+          };
+
+          function updateSeek() {
+            seek.value = Math.floor(video.currentTime * precision);
+            requestAnimationFrame(updateSeek);
+          }
+          updateSeek();
         }
       }
     });
