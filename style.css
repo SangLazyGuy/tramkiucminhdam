@@ -4,75 +4,65 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: "Poppins", sans-serif;
+	font-family: "Poppins", sans-serif;
 }
 
 body {
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    display: grid;
+    place-content: center;
     height: 100vh;
     width: 100vw;
-    overflow: hidden;
-    background: #f1c40f;
+	overflow: hidden;
+	background: #f1c40f;
 }
 
-/* =======================
-   RESPONSIVE WRAPPER
-======================= */
-.flipbook-wrapper {
-    position: relative;
-    width: min(95vw, 95vh * (1123 / 450));
-    height: calc(min(95vw, 95vh * (1123 / 450)) * 450 / 1123);
-    overflow: hidden;
-}
-
-/* =======================
-   ORIGINAL FLIPBOOK
-======================= */
 .flipbook {
     width: 1123px;
     height: 450px;
-    transform-origin: top left;
-    transform: scale(var(--scale));
 }
 
 .flipbook .hard {
     background: #c0392b !important;
     color: #fff;
     font-weight: bold;
-    border: none;
+    border: none; 
 }
 
-.flipbook .hard small {
-    font-style: italic;
-    font-weight: lighter;
-    opacity: 0.7;
-    font-size: 14px;
+.flipbook .hard small{
+	font-style: italic;
+	font-weight: lighter;
+	opacity: 0.7;
+	font-size: 14px;
 }
 
 .flipbook .page {
     background: white;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
     gap: 10px;
     border: 1px solid rgba(0, 0, 0, 0.11);
 }
 
-.page img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+.page img{
+	width: 100%;
+	height:100%;
+	object-fit: cover;
+	margin: auto;
 }
 
-/* =======================
-        VIDEO PAGE
-======================= */
-.page.video-page {
-    position: relative;
-    overflow: hidden;
+.video-page {
+    width: 100%;
+    height: 100%;
+	object-fit: cover;
+	margin:auto;
+    outline: none;
+}
+
+.flipbook .page small{
+	font-size: 14px;
+    margin-bottom: 10px;
 }
 
 .video-ui {
@@ -94,7 +84,6 @@ video::-webkit-media-controls {
     background: #ddd;
     border-radius: 5px;
 }
-
 .seekbar::-webkit-slider-thumb {
     appearance: none;
     width: 12px;
@@ -104,11 +93,33 @@ video::-webkit-media-controls {
     cursor: pointer;
 }
 
-/* =======================
-    FIX TURN.JS PAGE LAG
-======================= */
+/* ================================================
+     RESPONSIVE SCALE (THÊM VÀO CUỐI FILE)
+================================================ */
+.flipbook-wrapper {
+    position: relative;
+    width: min(95vw, 95vh * (1123 / 450));
+    height: calc(min(95vw, 95vh * (1123 / 450)) * 450 / 1123);
+    overflow: hidden;
+}
+
+.flipbook {
+    transform-origin: top left;
+    transform: scale(var(--scale));
+}
+
+/* Fix turn.js bị lệch khi hover / 3D */
 .flipbook .page,
 .flipbook .page-wrapper {
     backface-visibility: hidden;
     transform: translateZ(0);
+}
+
+/* Touch xử lý tốt hơn */
+.flipbook,
+.flipbook * {
+    touch-action: pan-y;
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
 }
