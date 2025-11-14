@@ -1,10 +1,10 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap');
 
-*{
+* {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-	font-family: "Poppins", sans-serif;
+    font-family: "Poppins", sans-serif;
 }
 
 body {
@@ -12,73 +12,88 @@ body {
     place-content: center;
     height: 100vh;
     width: 100vw;
-	overflow: hidden;
-	background: #f1c40f;
+    overflow: hidden;
+    background: #f1c40f;
 }
 
+/* Flipbook kích thước chuẩn */
 .flipbook {
     width: 1123px;
     height: 450px;
 }
 
+/* Bìa */
 .flipbook .hard {
     background: #c0392b !important;
     color: #fff;
     font-weight: bold;
-    border: none; 
+    border: none;
 }
 
-.flipbook .hard small{
-	font-style: italic;
-	font-weight: lighter;
-	opacity: 0.7;
-	font-size: 14px;
+.flipbook .hard small {
+    font-style: italic;
+    opacity: 0.7;
+    font-size: 14px;
 }
 
+/* Trang */
 .flipbook .page {
     background: white;
-	display: flex;
-	flex-direction: column;
-	justify-content: center;
-	align-items: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
     gap: 10px;
     border: 1px solid rgba(0, 0, 0, 0.11);
 }
 
-.page img{
-	width: 100%;
-	height:100%;
-	object-fit: cover;
-	margin: auto;
-}
-
-.video-page {
+/* Ảnh */
+.page img {
     width: 100%;
     height: 100%;
-	object-fit: cover;
-	margin:auto;
-    outline: none;
+    object-fit: cover;
 }
 
+/* ======= VIDEO FIX ======= */
 
-.flipbook .page small{
-	font-size: 14px;
-    margin-bottom: 10px;
+/* Trang có video */
+.page.video-page {
+    position: relative;
+    overflow: hidden;
 }
+
+/* Video wrapper */
+.video-holder {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+
+    /* chống lệch khi flip */
+    transform: translateZ(0) !important;
+    backface-visibility: hidden !important;
+
+    /* RẤT QUAN TRỌNG: video cần click nên pointer-events phải bật */
+    pointer-events: auto;
+}
+
+/* Video */
 .video-ui {
     width: 100%;
     height: 100%;
     object-fit: cover;
     outline: none;
-
-    /* NGĂN hiện nút mặc định */
-    controls: none;
 }
+
+/* Xóa control video */
 video::-webkit-media-controls {
     display: none !important;
 }
 
+/* Seekbar */
 .seekbar {
+    position: relative;
+    z-index: 50;
     width: 100%;
     margin-top: 8px;
     appearance: none;
@@ -86,53 +101,23 @@ video::-webkit-media-controls {
     background: #ddd;
     border-radius: 5px;
 }
+
 .seekbar::-webkit-slider-thumb {
     appearance: none;
     width: 12px;
     height: 12px;
     background: #000;
     border-radius: 50%;
-    cursor: pointer;
-}
-.page.video-page {
-    position: relative;
-    overflow: hidden; /* chống tràn khi trang lật */
 }
 
-.video-holder {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
+/* ======= FIX TURN.JS ======= */
 
-    /* tránh bị transform kéo lệch */
+.flipbook .page-wrapper {
     transform: translateZ(0) !important;
-    will-change: unset !important;
+    backface-visibility: hidden !important;
 }
 
 .video-ui {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-
-    /* KHÔNG cho TurnJS ảnh hưởng */
-    transform: none !important;
-    backface-visibility: hidden !important;
-}
-.flipbook .page-wrapper,
-.flipbook .page {
     transform: translateZ(0) !important;
     backface-visibility: hidden !important;
 }
-
-
-
-
-
-
-
-
-
-
-
-
