@@ -57,49 +57,42 @@ body {
 .page.video-page {
     position: relative;
 }
-
-.video-overlay {
+#video-container {
     position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-
-    pointer-events: none; /* video nhận click sau */
-    z-index: 50;
-
-    /* tách overlay khỏi transform */
-    transform: none !important;
+    width: 1123px;
+    height: 450px;
+    display: none; /* hiện khi lật tới */
+    pointer-events: none; /* để click pass qua flipbook */
+    z-index: 9999;
 }
 
-/* Video */
 .video-ui {
     width: 100%;
     height: 100%;
     object-fit: cover;
-
-    pointer-events: auto; /* nhận click play/pause */
+    pointer-events: auto; /* video nhận click */
+    background: black;
 }
 
-/* Seekbar */
 .seekbar {
     position: absolute;
-    bottom: 5px;
+    bottom: 10px;
     left: 0;
     width: 100%;
-    z-index: 99;
+    appearance: none;
+    height: 6px;
+    background: #ddd;
+    border-radius: 6px;
     pointer-events: auto;
+    z-index: 20;
 }
 
-/* Tắt transform của TurnJS lên overlay */
-.page.video-page,
-.video-overlay,
-.video-ui {
-    backface-visibility: hidden !important;
-    transform: none !important;
+.seekbar::-webkit-slider-thumb {
+    appearance: none;
+    width: 12px;
+    height: 12px;
+    background: #000;
+    border-radius: 50%;
 }
 
-/* TurnJS internal fix */
-.flipbook .page-wrapper {
-    backface-visibility: hidden !important;
-}
 
