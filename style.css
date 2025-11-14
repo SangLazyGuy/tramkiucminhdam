@@ -94,6 +94,32 @@ video::-webkit-media-controls {
     border-radius: 50%;
     cursor: pointer;
 }
+.page.video-page {
+    position: relative;
+    overflow: hidden; /* chống tràn khi trang lật */
+}
+
+.video-holder {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+
+    /* tránh bị transform kéo lệch */
+    transform: translateZ(0) !important;
+    will-change: unset !important;
+}
+
+.video-ui {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+
+    /* KHÔNG cho TurnJS ảnh hưởng */
+    transform: none !important;
+    backface-visibility: hidden !important;
+}
+
 
 
 
