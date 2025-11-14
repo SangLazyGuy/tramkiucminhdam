@@ -15,27 +15,12 @@
     <div class="flipbook">
       <div class="hard">My Pokemon Gallery <small>~ HankTheTank</small></div>
       <div class="hard"></div>
-      <div class="video-wrapper">
-        <video id="v1" class="video-no-ui" src="video1.mp4"></video>
-        <input type="range" id="seek1" class="seekbar" value="0" min="0" max="100">
-    </div>
-      <Script>
-        const video = document.getElementById("v1");
-const seek = document.getElementById("seek1");
+      <div class="page video-page">
+    <video class="video-no-ui" src="video1.mp4"></video>
+    <input type="range" class="seekbar">
+</div>
 
-video.addEventListener("loadedmetadata", () => {
-    seek.max = video.duration;
-});
-
-video.addEventListener("timeupdate", () => {
-    seek.value = video.currentTime;
-});
-
-seek.addEventListener("input", () => {
-    video.currentTime = seek.value;
-    if (video.paused) video.play();
-});
-      </script> 
+    
 
     <div>
       <img src="a.jpg" alt="" />
@@ -100,6 +85,41 @@ window.addEventListener("pagehide", saveAudioTime);
 
 // Lưu định kỳ 2 giây/lần
 setInterval(saveAudioTime, 2000);
+</script>
+<script>
+function setupAllVideos() {
+    const videoPages = document.querySelectorAll(".page.video-page");
+
+    videoPages.forEach(page => {
+        const video = page.querySelector("video");
+        const seek = page.querySelector(".seekbar");
+
+        if (!video || !seek) return;
+
+        // Set max seek when video loads
+        video.addEventListener("loadedmetadata", () => {
+            seek.max = video.duration;
+        });
+
+        // Update seekbar while video plays
+        video.addEventListener("timeupdate", () => {
+            seek.value = video.currentTime;
+        });
+
+        // Control video from seekbar
+        seek.addEventListener("input", () => {
+            video.currentTime = seek.value;
+            if (video.paused) video.play();
+        });
+    });
+
+    // Pause all videos when flipping pages
+    $(".flipbook").bind("turning", function () {
+        document.querySelectorAll("video").forEach(v => v.pause());
+    });
+}
+
+setupAllVideos();
 </script>
 
 </body>
