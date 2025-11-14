@@ -65,22 +65,29 @@ body {
 	font-size: 14px;
     margin-bottom: 10px;
 }
-/* XÓA nút play/pause, mute, volume, fullscreen */
-video::-webkit-media-controls-play-button,
-video::-webkit-media-controls-volume-control-container,
-video::-webkit-media-controls-mute-button,
-video::-webkit-media-controls-fullscreen-button,
-video::-webkit-media-controls-timeline-container
-{
-    display: none !important;
+.video-only {
+    width: 100%;
+    pointer-events: none; /* không click pause được */
 }
 
-/* Chỉ giữ thanh timeline */
-video::-webkit-media-controls-timeline {
-    display: block !important;
-    margin-left: 0;
-    margin-right: 0;
+.seekbar {
+    width: 100%;
+    margin-top: 5px;
+    appearance: none;
+    background: #ddd;
+    height: 5px;
+    border-radius: 4px;
 }
+
+.seekbar::-webkit-slider-thumb {
+    appearance: none;
+    width: 12px;
+    height: 12px;
+    background: #555;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
 
 
 
