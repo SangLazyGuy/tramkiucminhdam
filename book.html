@@ -10,26 +10,29 @@
 
 <body>
 
-<div class="flipbook">
-    <div class="hard">My Pokemon Gallery <small>~ Hank</small></div>
-    <div class="hard"></div>
+<div class="flipbook-wrapper">
+    
+    <div class="flipbook">
+        <div class="hard">My Pokemon Gallery</div>
+        <div class="hard"></div>
 
-    <!-- Trang có video -->
-    <div class="page" data-video="video1"></div>
+        <div class="page" data-video="video1"></div>
 
-    <div><img src="a.jpg"></div>
-    <div><img src="b.jpg"></div>
-    <div><img src="c.jpg"></div>
-    <div><img src="d.jpg"></div>
+        <div><img src="a.jpg"></div>
+        <div><img src="b.jpg"></div>
+        <div><img src="c.jpg"></div>
+        <div><img src="d.jpg"></div>
 
-    <div class="hard"></div>
-    <div class="hard">Thanks <small>~ Hank</small></div>
-</div>
+        <div class="hard"></div>
+        <div class="hard">Thank You</div>
+    </div>
 
-<!-- VIDEO OVERLAY (luôn click được) -->
-<div id="video-overlay">
-    <video id="video1" src="video1.mp4"></video>
-    <input type="range" id="seek1" class="seekbar" min="0" value="0">
+    <!-- VIDEO không bỏ trong trang nữa, nhưng đặt CHUNG wrapper -->
+    <div id="video-overlay">
+        <video id="video1" src="video1.mp4"></video>
+        <input type="range" id="seek1" class="seekbar" min="0" value="0">
+    </div>
+
 </div>
 
 <script src="jquery.js"></script>
@@ -37,12 +40,8 @@
 
 <script>
 $(".flipbook").turn({
-    elevation: 50,
-    gradients: true,
-    acceleration: true,
     when:{
         turned: function(e, page){
-
             const overlay = document.getElementById("video-overlay");
             overlay.style.display = "none";
 
@@ -51,19 +50,21 @@ $(".flipbook").turn({
 
             if(videoId){
                 const rect = pageEl[0].getBoundingClientRect();
-                const overlay = document.getElementById("video-overlay");
+                const wrapperRect = document.querySelector(".flipbook-wrapper").getBoundingClientRect();
 
-                overlay.style.left = rect.left + "px";
-                overlay.style.top  = rect.top  + "px";
+                // căn theo position absolute trong wrapper
+                overlay.style.left = (rect.left - wrapperRect.left) + "px";
+                overlay.style.top  = (rect.top  - wrapperRect.top ) + "px";
+
                 overlay.style.display = "block";
 
-                const video = document.getElementById(videoId);
-                const seek  = document.getElementById("seek1");
+                let video = document.getElementById(videoId);
+                let seek  = document.getElementById("seek1");
 
                 video.currentTime = 0;
                 video.play();
 
-                video.onloadedmetadata = ()=> seek.max = Math.floor(video.duration*10);
+                video.onloadedmetadata = () => seek.max = Math.floor(video.duration * 10);
 
                 seek.oninput = ()=>{
                     video.currentTime = seek.value / 10;
@@ -81,6 +82,21 @@ $(".flipbook").turn({
         }
     }
 });
+</script>
+
+<script>
+function scaleFlipbook(){
+    const wrapper = document.querySelector(".flipbook-wrapper");
+    const book = document.querySelector(".flipbook");
+
+    const scale = wrapper.clientWidth / 1123;
+
+    book.style.transform = `scale(${scale})`;
+    document.getElementById("video-overlay").style.transform = `scale(${scale})`;
+}
+
+scaleFlipbook();
+window.addEventListener("resize", scaleFlipbook);
 </script>
 
 </body>
