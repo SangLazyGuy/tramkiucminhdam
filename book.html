@@ -1,264 +1,54 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<title>Flipbook Hoàn Chỉnh</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="style.css" />
+  <title>Pokemon Magazine</title>
 <audio id="bgMusic" loop>
   <source src="nhacnen.mp3" type="audio/mpeg">
 </audio>
-<style>
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-html, body {
-  width: 100%;
-  height: 100%;
-  background: #fffacd;
-  font-family: sans-serif;
-  overflow: hidden;
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-}
-
-.book-container {
-  position: relative;
-  height: 80vh;
-  width: 45vw;
-  perspective: 1500px; /* Giảm perspective để gần hơn */
-  transform: translateY(17%) translateX(-11%);
-}
-
-.book {
-  position: relative;
-  height: 100%;
-  width: 100%;
-  transform-style: preserve-3d;
-}
-
-.page {
-  position: absolute;
-  top: 0;
-  left: 0;
-  transform-style: preserve-3d;
-  transform-origin: left center;
-  transition: transform 1.2s ease-out, box-shadow 1.2s ease-out; /* Chậm hơn, mượt hơn */
-  cursor: pointer;
-}
-
-.page.flipped {
-  transform: rotateY(-180deg);
-}
-
-/* Thêm shadow động khi lật */
-.page:hover {
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
-}
-
-.page.flipped {
-  box-shadow: -5px 5px 20px rgba(0, 0, 0, 0.2);
-}
-
-.page-side {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  backface-visibility: hidden;
-  -webkit-backface-visibility: hidden;
-  border: 2px solid #333;
-  border-radius: 8px;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-  overflow: hidden;
-}
-
-.page-front {
-  z-index: 2;
-}
-
-.page-back {
-  transform: rotateY(180deg);
-  -webkit-transform: rotateY(180deg);
-}
-
-.page-side img, .page-side video {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
-
-.cover-text {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 3rem;
-  font-weight: bold;
-  color: white;
-  background: red;
-}
-
-.cover-back-text {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 2.5rem;
-  font-weight: bold;
-  color: yellow;
-  background: blue;
-}
-</style>
 </head>
+
 <body>
+  <div class="flipbook">
+    <div class="hard">My Pokemon Gallery <small>~ HankTheTank</small></div>
+    <div class="hard"></div>
+    <div>
+      <small>Lets Look At Some Amazing Pokemon ❤️</small>
+      <small>Gotta Catch 'Em All</small>
+    </div>
+    <div>
+      <img src="images/img-1.png" alt="" />
+      <small> Charmandar </small>
+    </div>
+    <div>
+      <img src="images/img-2.png" alt="" />
+      <small> Arbok </small>
+    </div>
+    <div>
+      <img src="images/img-3.png" alt="" />
+      <small> Pikachu </small>
+    </div>
+    <div>
+      <img src="images/img-4.png" alt="" />
+      <small> Mew </small>
+    </div>
+    <div>
+      <img src="images/img-5.png" alt="" />
+      <small> Darkrai </small>
+    </div>
+    <div class="hard"></div>
+    <div class="hard">Thank You <small>~ HankTheTank</small></div>
+  </div>
 
-<div class="book-container" id="bookContainer">
-  <div class="book" id="book"></div>
-</div>
-
+  <script src="jquery.js"></script>
+  <script src="turn.js"></script>
+  <script>
+    $(".flipbook").turn();
+  </script>
 <script>
-const slideRatio = 1123 / 794;
-
-const pagesData = [
-    { front: "b.jpg", back: "c.jpg" },
-  { front: "video1.mp4", back: "a.jpg", type: "video" }
-  // Mặt sau là video
-];
-
-const book = document.getElementById("book");
-const container = document.getElementById("bookContainer");
-const pages = [];
-let topZ = 1000;
-
-// ===== Tạo bìa trước =====
-function createCoverFront() {
-  const page = document.createElement("div");
-  page.className = "page";
-  page.style.zIndex = topZ + 1000;
-
-  const front = document.createElement("div");
-  front.className = "page-side page-front cover-text";
-  front.innerText = "2023-2026";
-
-  const back = document.createElement("div");
-  back.className = "page-side page-back cover-back-text";
-  back.innerText = "KỶ NIỆM";
-
-  page.appendChild(front);
-  page.appendChild(back);
-  
-  page.addEventListener("click", () => {
-    page.classList.toggle("flipped");
-    page.style.zIndex = topZ++;
-  });
-
-  book.appendChild(page);
-  pages.push(page);
-}
-
-// ===== Tạo trang giữa - hỗ trợ cả ảnh và video =====
-function createPage(frontSrc, backSrc, frontType = "image", backType = "image") {
-  const page = document.createElement("div");
-  page.className = "page";
-  page.style.zIndex = topZ++;
-
-  // Tạo mặt trước
-  const front = document.createElement("div");
-  front.className = "page-side page-front";
-  
-  if (frontType === "video") {
-    const videoFront = document.createElement("video");
-    videoFront.src = frontSrc;
-    videoFront.autoplay = true;
-    videoFront.loop = true;
-    videoFront.muted = true; // Tắt tiếng để autoplay hoạt động
-    videoFront.playsInline = true; // Quan trọng cho mobile
-    front.appendChild(videoFront);
-  } else {
-    const imgFront = document.createElement("img");
-    imgFront.src = frontSrc;
-    front.appendChild(imgFront);
-  }
-
-  // Tạo mặt sau
-  const back = document.createElement("div");
-  back.className = "page-side page-back";
-  
-  if (backType === "video") {
-    const videoBack = document.createElement("video");
-    videoBack.src = backSrc;
-    videoBack.autoplay = true;
-    videoBack.loop = true;
-    videoBack.muted = true;
-    videoBack.playsInline = true;
-    back.appendChild(videoBack);
-  } else {
-    const imgBack = document.createElement("img");
-    imgBack.src = backSrc;
-    back.appendChild(imgBack);
-  }
-
-  page.appendChild(front);
-  page.appendChild(back);
-
-  page.addEventListener("click", () => {
-    page.classList.toggle("flipped");
-    page.style.zIndex = topZ++;
-  });
-
-  book.appendChild(page);
-  pages.push(page);
-}
-
-// ===== Tạo bìa sau =====
-function createCoverBack() {
-  const page = document.createElement("div");
-  page.className = "page";
-  page.style.zIndex = topZ - 500;
-
-  const front = document.createElement("div");
-  front.className = "page-side page-front";
-  front.style.background = "red";
-
-  const back = document.createElement("div");
-  back.className = "page-side page-back";
-  back.style.background = "red";
-
-  page.appendChild(front);
-  page.appendChild(back);
-
-  page.addEventListener("click", () => {
-    page.classList.toggle("flipped");
-    page.style.zIndex = topZ++;
-  });
-
-  book.appendChild(page);
-  pages.push(page);
-}
-
-// ===== Khởi tạo sách =====
-createCoverFront();
-pagesData.forEach(p => {
-  const frontType = p.type || "image";
-  const backType = p.backType || "image";
-  createPage(p.front, p.back, frontType, backType);
-});
-createCoverBack();
-
-// ===== Responsive =====
-function resizePages() {
-  const width = container.clientWidth;
-  const height = width / slideRatio;
-  pages.forEach(page => {
-    page.style.width = width + "px";
-    page.style.height = height + "px";
-  });
-}
-window.addEventListener("resize", resizePages);
-resizePages();
-
-// ===== Nhạc nền - Lưu và khôi phục vị trí =====
 const audio = document.getElementById("bgMusic");
 
 function restoreAudioTime() {
@@ -296,4 +86,5 @@ setInterval(saveAudioTime, 2000);
 </script>
 
 </body>
+
 </html>
