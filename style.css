@@ -54,27 +54,21 @@ body {
     object-fit: cover;
 }
 
-/* ======= VIDEO FIX ======= */
-
-/* Trang có video */
 .page.video-page {
     position: relative;
-    overflow: hidden;
 }
 
-/* Video wrapper */
-.video-holder {
+.video-overlay {
     position: absolute;
     inset: 0;
     width: 100%;
     height: 100%;
 
-    /* chống lệch khi flip */
-    transform: translateZ(0) !important;
-    backface-visibility: hidden !important;
+    pointer-events: none; /* video nhận click sau */
+    z-index: 50;
 
-    /* RẤT QUAN TRỌNG: video cần click nên pointer-events phải bật */
-    pointer-events: auto;
+    /* tách overlay khỏi transform */
+    transform: none !important;
 }
 
 /* Video */
@@ -82,42 +76,30 @@ body {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    outline: none;
-}
 
-/* Xóa control video */
-video::-webkit-media-controls {
-    display: none !important;
+    pointer-events: auto; /* nhận click play/pause */
 }
 
 /* Seekbar */
 .seekbar {
-    position: relative;
-    z-index: 50;
+    position: absolute;
+    bottom: 5px;
+    left: 0;
     width: 100%;
-    margin-top: 8px;
-    appearance: none;
-    height: 6px;
-    background: #ddd;
-    border-radius: 5px;
+    z-index: 99;
+    pointer-events: auto;
 }
 
-.seekbar::-webkit-slider-thumb {
-    appearance: none;
-    width: 12px;
-    height: 12px;
-    background: #000;
-    border-radius: 50%;
-}
-
-/* ======= FIX TURN.JS ======= */
-
-.flipbook .page-wrapper {
-    transform: translateZ(0) !important;
-    backface-visibility: hidden !important;
-}
-
+/* Tắt transform của TurnJS lên overlay */
+.page.video-page,
+.video-overlay,
 .video-ui {
-    transform: translateZ(0) !important;
+    backface-visibility: hidden !important;
+    transform: none !important;
+}
+
+/* TurnJS internal fix */
+.flipbook .page-wrapper {
     backface-visibility: hidden !important;
 }
+
