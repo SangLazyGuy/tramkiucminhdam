@@ -40,59 +40,59 @@ body {
 .flipbook .page {
     background: white;
     display: flex;
-    flex-direction: column;
     justify-content: center;
     align-items: center;
-    gap: 10px;
-    border: 1px solid rgba(0, 0, 0, 0.11);
+    border: 1px solid rgba(0, 0, 0, 0.15);
 }
 
-/* Ảnh */
+/* Ảnh full */
 .page img {
     width: 100%;
     height: 100%;
     object-fit: cover;
 }
 
-.page.video-page {
-    position: relative;
-}
+/* ===== VIDEO OVERLAY ===== */
 #video-container {
     position: absolute;
     width: 1123px;
     height: 450px;
-    display: none; /* hiện khi lật tới */
-    pointer-events: none; /* để click pass qua flipbook */
-    z-index: 9999;
+    display: none;
+    pointer-events: none;
+    z-index: 1; /* an toàn */
+}
+
+/* Khi hiển thị video */
+#video-container.active {
+    display: block;
+    pointer-events: auto;
+    z-index: 999; /* chỉ lúc active mới cao */
 }
 
 .video-ui {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    pointer-events: auto; /* video nhận click */
     background: black;
 }
 
+/* Seekbar */
 .seekbar {
     position: absolute;
     bottom: 10px;
     left: 0;
     width: 100%;
-    appearance: none;
     height: 6px;
     background: #ddd;
-    border-radius: 6px;
-    pointer-events: auto;
-    z-index: 20;
+    border-radius: 5px;
+    appearance: none;
+    z-index: 1000;
 }
 
 .seekbar::-webkit-slider-thumb {
-    appearance: none;
+    -webkit-appearance: none;
     width: 12px;
     height: 12px;
     background: #000;
     border-radius: 50%;
 }
-
-
