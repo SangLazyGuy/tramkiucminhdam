@@ -19,6 +19,23 @@
         <video id="v1" class="video-no-ui" src="video1.mp4"></video>
         <input type="range" id="seek1" class="seekbar" value="0" min="0" max="100">
     </div>
+      <Script>
+        const video = document.getElementById("v1");
+const seek = document.getElementById("seek1");
+
+video.addEventListener("loadedmetadata", () => {
+    seek.max = video.duration;
+});
+
+video.addEventListener("timeupdate", () => {
+    seek.value = video.currentTime;
+});
+
+seek.addEventListener("input", () => {
+    video.currentTime = seek.value;
+    if (video.paused) video.play();
+});
+      </script> 
 
     <div>
       <img src="a.jpg" alt="" />
