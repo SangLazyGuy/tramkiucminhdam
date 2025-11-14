@@ -71,8 +71,6 @@ body {
     object-fit: cover;
     margin: auto;
     outline: none;
-
-    /* ngăn UI hiện */
     pointer-events: none;
 
     /* Chrome/Edge */
@@ -86,7 +84,7 @@ body {
     }
 }
 
-/* Seekbar */
+/* Seekbar only */
 .seekbar {
     width: 100%;
     margin-top: 5px;
@@ -104,6 +102,7 @@ body {
     border-radius: 50%;
     cursor: pointer;
 }
+
 
 
 
