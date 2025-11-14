@@ -40,11 +40,25 @@
 <script src="jquery.js"></script>
 <script src="turn.js"></script>
 
+<!-- ================= ENABLE TOUCH FOR MOBILE ================= -->
 <script>
-$(".flipbook").turn();
+// Bắt buộc để turn.js hoạt động được trên điện thoại
+$.fn.turn.extend({
+    isTouch: function() { return true; }
+});
 </script>
 
-<!-- =============== AUDIO MEMORY =============== -->
+<script>
+// Init flipbook
+$(".flipbook").turn({
+    display: "double",
+    autoCenter: true,
+    elevation: 50,
+    gradients: true
+});
+</script>
+
+<!-- ================= AUDIO MEMORY ================= -->
 <script>
 const audio = document.getElementById("bgMusic");
 
@@ -61,7 +75,7 @@ window.addEventListener("beforeunload", () => {
 });
 </script>
 
-<!-- =============== VIDEO CONTROL =============== -->
+<!-- ================= VIDEO CONTROL ================= -->
 <script>
 function setupAllVideos() {
     const pages = document.querySelectorAll(".page.video-page");
@@ -69,6 +83,9 @@ function setupAllVideos() {
     pages.forEach(page => {
         const video = page.querySelector("video");
         const seek = page.querySelector(".seekbar");
+
+        if (!video || !seek) return;
+
         const precision = 10;
 
         video.addEventListener("loadedmetadata", () => {
@@ -85,24 +102,27 @@ function setupAllVideos() {
             video.play();
         });
 
-        function updateSeek() {
-            seek.value = Math.floor(video.currentTime * precision);
-            requestAnimationFrame(updateSeek);
+        function update() {
+            if (!video.paused) {
+                seek.value = Math.floor(video.currentTime * precision);
+            }
+            requestAnimationFrame(update);
         }
-        updateSeek();
+        update();
     });
 }
 
 setupAllVideos();
 </script>
 
-<!-- =============== RESPONSIVE SCALE =============== -->
+<!-- ================= RESPONSIVE SCALE ================= -->
 <script>
 function scaleFlipbook() {
     const wrapper = document.querySelector(".flipbook-wrapper");
-    const book = document.querySelector(".flipbook");
+    const flipbook = document.querySelector(".flipbook");
+
     const scale = wrapper.clientWidth / 1123;
-    book.style.setProperty("--scale", scale);
+    flipbook.style.setProperty("--scale", scale);
 }
 
 scaleFlipbook();
