@@ -16,9 +16,10 @@
       <div class="hard">My Pokemon Gallery <small>~ HankTheTank</small></div>
       <div class="hard"></div>
       <div class="page video-page">
-    <video class="video-no-ui" src="video1.mp4"></video>
-    <input type="range" class="seekbar">
+  <video class="video-ui" src="video.mp4"></video>
+  <input type="range" class="seekbar">
 </div>
+
 
     <div>
       <img src="a.jpg" alt="" />
@@ -86,65 +87,45 @@ setInterval(saveAudioTime, 2000);
 </script>
 <script>
 function setupAllVideos() {
-    const videoPages = document.querySelectorAll(".page.video-page");
+    const pages = document.querySelectorAll(".page.video-page");
 
-    videoPages.forEach(page => {
+    pages.forEach(page => {
         const video = page.querySelector("video");
         const seek = page.querySelector(".seekbar");
 
         if (!video || !seek) return;
 
-        // Chrome cho play mà không bị chặn
-        video.muted = true;
-        video.playsInline = true;
-
-        // Set max cho seekbar
+        // Load metadata -> đặt đúng số nấc
         video.addEventListener("loadedmetadata", () => {
-            seek.max = video.duration;
+            seek.max = Math.floor(video.duration);  // đủ số nấc theo giây
+            seek.value = 0;
         });
 
-        // Seek → đổi thời gian → play ngay
+        // Click video để play/pause
+        video.addEventListener("click", () => {
+            if (video.paused) video.play();
+            else video.pause();
+        });
+
+        // Kéo seekbar => nhảy thời gian + chạy tiếp
         seek.addEventListener("input", () => {
             video.currentTime = seek.value;
             video.play();
         });
 
-        // Đồng bộ 60fps (không lag)
-        function updateSeekBar() {
+        // Seekbar đi theo video (60fps)
+        function updateSeek() {
             if (!video.paused) {
-                seek.value = video.currentTime;
+                seek.value = Math.floor(video.currentTime);
             }
-            requestAnimationFrame(updateSeekBar);
+            requestAnimationFrame(updateSeek);
         }
-        requestAnimationFrame(updateSeekBar);
-    });
-
-    // Tự động PLAY khi lật tới trang video
-    $(".flipbook").bind("turned", function(event, pageNumber){
-        const pages = document.querySelectorAll(".page.video-page");
-        
-        pages.forEach((page, index) => {
-            const realPage = index + 1;
-            const video = page.querySelector("video");
-
-            if (!video) return;
-
-            if (realPage === pageNumber) {
-                video.currentTime = 0;  // chạy lại từ đầu
-                video.play();           // auto play
-            } else {
-                video.pause();
-            }
-        });
-    });
-
-    // Tạm dừng tất cả video khi đang lật
-    $(".flipbook").bind("turning", function () {
-        document.querySelectorAll("video").forEach(v => v.pause());
+        requestAnimationFrame(updateSeek);
     });
 }
 
 setupAllVideos();
+
 </script>
 
 
