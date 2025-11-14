@@ -6,128 +6,130 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="stylesheet" href="style.css" />
   <title>Flipbook</title>
-
-  <audio id="bgMusic" loop>
-    <source src="nhacnen.mp3" type="audio/mpeg">
-  </audio>
+<audio id="bgMusic" loop>
+  <source src="nhacnen.mp3" type="audio/mpeg">
+</audio>
 </head>
 
 <body>
+    <div class="flipbook">
+      <div class="hard">My Pokemon Gallery <small>~ HankTheTank</small></div>
+      <div class="hard"></div>
+      <div class="page video-page">
+  <video class="video-ui" src="video1.mp4"></video>
+  <input type="range" class="seekbar">
+</div>
 
-  <div class="flipbook">
-    <div class="hard">My Pokemon Gallery <small>~ HankTheTank</small></div>
-    <div class="hard"></div>
 
-    <!-- TRANG VIDEO -->
-    <div class="page video-placeholder" data-video="video1"></div>
+    <div>
+      <img src="a.jpg" alt="" />
+    </div>
+      <div>
+      <img src="a.jpg" alt="" />
+    </div>
+    <div>
+      <img src="b.jpg" alt="" />
 
-    <!-- IMAGE PAGES -->
-    <div><img src="a.jpg" /></div>
-    <div><img src="a.jpg" /></div>
-    <div><img src="b.jpg" /></div>
-    <div><img src="c.jpg" /></div>
-    <div><img src="d.jpg" /></div>
+    </div>
+    <div>
+      <img src="c.jpg" alt="" />
+ 
+    </div>
+    <div>
+      <img src="d.jpg" alt="" />
 
+    </div>
+    
     <div class="hard"></div>
     <div class="hard">Thank You <small>~ HankTheTank</small></div>
   </div>
 
-  <!-- VIDEO OVERLAY -->
-  <div id="video-container">
-    <video id="video1" class="video-ui" src="video1.mp4"></video>
-    <input type="range" id="seek1" class="seekbar" value="0" min="0" max="100">
-  </div>
-
-  <!-- LIBRARIES -->
   <script src="jquery.js"></script>
   <script src="turn.js"></script>
-
-  <!-- INIT BOOK -->
   <script>
     $(".flipbook").turn();
   </script>
+<script>
+const audio = document.getElementById("bgMusic");
 
-  <!-- AUDIO MEMORY -->
-  <script>
-    const audio = document.getElementById("bgMusic");
+function restoreAudioTime() {
+  const savedTime = localStorage.getItem("bgMusicTime");
+  if (savedTime) {
+    audio.currentTime = parseFloat(savedTime);
+  }
+}
 
-    function restoreAudioTime() {
-      const saved = localStorage.getItem("bgMusicTime");
-      if (saved) audio.currentTime = parseFloat(saved);
-    }
+// Khi file nhạc đã load metadata, đặt lại thời gian
+audio.addEventListener("loadedmetadata", restoreAudioTime);
 
-    audio.addEventListener("loadedmetadata", restoreAudioTime);
+// Khi quay lại từ cache (Back/Forward)
+window.addEventListener("pageshow", (e) => {
+  if (e.persisted) {
+    restoreAudioTime();
+    audio.play().catch(()=>{});
+  }
+});
 
-    window.addEventListener("pageshow", (e) => {
-      if (e.persisted) {
-        restoreAudioTime();
-        audio.play().catch(() => {});
-      }
-    });
+// Phát nhạc, tránh lỗi autoplay trên mobile
+audio.play().catch(() => {});
 
-    audio.play().catch(() => {});
-    function saveAudio() { localStorage.setItem("bgMusicTime", audio.currentTime); }
+// Hàm lưu vị trí nhạc
+function saveAudioTime() {
+  localStorage.setItem("bgMusicTime", audio.currentTime);
+}
 
-    window.addEventListener("beforeunload", saveAudio);
-    window.addEventListener("pagehide", saveAudio);
+// Lưu khi rời trang hoặc ẩn trang
+window.addEventListener("beforeunload", saveAudioTime);
+window.addEventListener("pagehide", saveAudioTime);
 
-    setInterval(saveAudio, 2000);
-  </script>
+// Lưu định kỳ 2 giây/lần
+setInterval(saveAudioTime, 2000);
+</script>
+<script>
+function setupAllVideos() {
+    const pages = document.querySelectorAll(".page.video-page");
 
-  <!-- VIDEO LOGIC HOÀN CHỈNH -->
-  <script>
-    $(".flipbook").turn({
-      when: {
-        turned: function (e, page) {
+    pages.forEach(page => {
+        const video = page.querySelector("video");
+        const seek = page.querySelector(".seekbar");
 
-          const VC = document.getElementById("video-container");
-          VC.classList.remove("active");
+        if (!video || !seek) return;
 
-          const pageEl = $(".flipbook").children().eq(page - 1);
-          const videoId = pageEl.data("video");
+        const precision = 10;  // 1 giây = 10 nấc => 0.1s / bước
 
-          if (!videoId) return;
-
-          const rect = pageEl[0].getBoundingClientRect();
-          VC.style.left = rect.left + "px";
-          VC.style.top = rect.top + "px";
-          VC.style.width = rect.width + "px";
-          VC.style.height = rect.height + "px";
-
-          VC.classList.add("active");
-
-          const video = document.getElementById(videoId);
-          const seek = document.getElementById("seek1");
-
-          video.pause();
-          video.currentTime = 0;
-
-          video.muted = true;     /* đảm bảo autoplay không bị chặn */
-          video.play().catch(() => {});
-
-          const precision = 10;
-
-          if (video.readyState >= 1) {
+        // Khi load metadata → set số nấc
+        video.addEventListener("loadedmetadata", () => {
             seek.max = Math.floor(video.duration * precision);
-          } else {
-            video.onloadedmetadata = () => {
-              seek.max = Math.floor(video.duration * precision);
-            };
-          }
+            seek.value = 0;
+        });
 
-          seek.oninput = () => {
+        // Click video = play/pause
+        video.addEventListener("click", () => {
+            if (video.paused) video.play();
+            else video.pause();
+        });
+
+        // Kéo seekbar → nhảy đúng thời gian + play
+        seek.addEventListener("input", () => {
             video.currentTime = seek.value / precision;
-          };
+            video.play();
+        });
 
-          function updateSeek() {
-            seek.value = Math.floor(video.currentTime * precision);
+        // Seekbar chạy mượt theo video (60fps)
+        function updateSeek() {
+            if (!video.paused) {
+                seek.value = Math.floor(video.currentTime * precision);
+            }
             requestAnimationFrame(updateSeek);
-          }
-          updateSeek();
         }
-      }
+        requestAnimationFrame(updateSeek);
     });
-  </script>
+}
+
+setupAllVideos();
+</script>
+
 
 </body>
+
 </html>
