@@ -2,104 +2,85 @@
 <html lang="en">
 
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <link rel="stylesheet" href="style.css"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="style.css">
   <title>Flipbook</title>
-
-  <audio id="bgMusic" loop>
-    <source src="nhacnen.mp3" type="audio/mpeg">
-  </audio>
 </head>
 
 <body>
 
 <div class="flipbook">
-    <div class="hard">My Pokemon Gallery <small>~ HankTheTank</small></div>
+    <div class="hard">My Pokemon Gallery <small>~ Hank</small></div>
     <div class="hard"></div>
 
-    <!-- VIDEO PAGE -->
-    <div class="page video-page">
-        <video class="video-ui" src="video1.mp4"></video>
-        <input type="range" class="seekbar" value="0">
-    </div>
+    <!-- Trang có video -->
+    <div class="page" data-video="video1"></div>
 
-    <!-- IMAGE PAGES -->
-    <div><img src="a.jpg"/></div>
-    <div><img src="a.jpg"/></div>
-    <div><img src="b.jpg"/></div>
-    <div><img src="c.jpg"/></div>
-    <div><img src="d.jpg"/></div>
+    <div><img src="a.jpg"></div>
+    <div><img src="b.jpg"></div>
+    <div><img src="c.jpg"></div>
+    <div><img src="d.jpg"></div>
 
     <div class="hard"></div>
-    <div class="hard">Thank You <small>~ HankTheTank</small></div>
+    <div class="hard">Thanks <small>~ Hank</small></div>
+</div>
+
+<!-- VIDEO OVERLAY (luôn click được) -->
+<div id="video-overlay">
+    <video id="video1" src="video1.mp4"></video>
+    <input type="range" id="seek1" class="seekbar" min="0" value="0">
 </div>
 
 <script src="jquery.js"></script>
 <script src="turn.js"></script>
 
-<!-- INIT FLIPBOOK -->
 <script>
 $(".flipbook").turn({
-    display: "double",
-    acceleration: true,
-    gradients: true,
     elevation: 50,
-});
-</script>
+    gradients: true,
+    acceleration: true,
+    when:{
+        turned: function(e, page){
 
-<!-- AUDIO MEMORY -->
-<script>
-const audio = document.getElementById("bgMusic");
+            const overlay = document.getElementById("video-overlay");
+            overlay.style.display = "none";
 
-audio.addEventListener("loadedmetadata", () => {
-    const t = localStorage.getItem("bgMusicTime");
-    if (t) audio.currentTime = parseFloat(t);
-});
+            const pageEl = $(".flipbook .page").eq(page-1);
+            const videoId = pageEl.data("video");
 
-audio.play().catch(()=>{});
+            if(videoId){
+                const rect = pageEl[0].getBoundingClientRect();
+                const overlay = document.getElementById("video-overlay");
 
-window.addEventListener("beforeunload", () => {
-    localStorage.setItem("bgMusicTime", audio.currentTime);
-});
-</script>
+                overlay.style.left = rect.left + "px";
+                overlay.style.top  = rect.top  + "px";
+                overlay.style.display = "block";
 
-<!-- VIDEO CONTROL -->
-<script>
-function setupAllVideos() {
-    const pages = document.querySelectorAll(".video-page");
+                const video = document.getElementById(videoId);
+                const seek  = document.getElementById("seek1");
 
-    pages.forEach(page => {
-        const video = page.querySelector("video");
-        const seek  = page.querySelector(".seekbar");
-        const precision = 10;  // 1s = 10 bước
+                video.currentTime = 0;
+                video.play();
 
-        video.addEventListener("loadedmetadata", () => {
-            seek.max = Math.floor(video.duration * precision);
-        });
+                video.onloadedmetadata = ()=> seek.max = Math.floor(video.duration*10);
 
-        // Click -> play/pause
-        video.addEventListener("click", () => {
-            video.paused ? video.play() : video.pause();
-        });
+                seek.oninput = ()=>{
+                    video.currentTime = seek.value / 10;
+                    video.play();
+                };
 
-        // Seekbar kéo -> tua video
-        seek.addEventListener("input", () => {
-            video.currentTime = seek.value / precision;
-            video.play();
-        });
-
-        // Auto update seekbar
-        function sync() {
-            if (!video.paused) {
-                seek.value = Math.floor(video.currentTime * precision);
+                function sync(){
+                    if(!video.paused){
+                        seek.value = Math.floor(video.currentTime * 10);
+                    }
+                    requestAnimationFrame(sync);
+                }
+                sync();
             }
-            requestAnimationFrame(sync);
         }
-        sync();
-    });
-}
-setupAllVideos();
+    }
+});
 </script>
 
 </body>
