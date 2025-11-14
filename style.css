@@ -65,11 +65,28 @@ body {
 	font-size: 14px;
     margin-bottom: 10px;
 }
-.video-only {
+.video-no-ui {
     width: 100%;
-    pointer-events: none; /* không click pause được */
+    height: 100%;
+    object-fit: cover;
+    margin: auto;
+    outline: none;
+
+    /* ngăn UI hiện */
+    pointer-events: none;
+
+    /* Chrome/Edge */
+    -webkit-media-controls-enclosure {
+        display: none !important;
+    }
+
+    /* Safari */
+    -webkit-media-controls {
+        display: none !important;
+    }
 }
 
+/* Seekbar */
 .seekbar {
     width: 100%;
     margin-top: 5px;
@@ -87,6 +104,8 @@ body {
     border-radius: 50%;
     cursor: pointer;
 }
+
+
 
 
 
