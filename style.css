@@ -119,6 +119,13 @@ video::-webkit-media-controls {
     transform: none !important;
     backface-visibility: hidden !important;
 }
+.flipbook .page-wrapper,
+.flipbook .page {
+    transform: translateZ(0) !important;
+    backface-visibility: hidden !important;
+}
+
+
 
 
 
