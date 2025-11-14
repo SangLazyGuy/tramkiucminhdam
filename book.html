@@ -2,9 +2,9 @@
 <html lang="en">
 
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="stylesheet" href="style.css" />
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link rel="stylesheet" href="style.css"/>
   <title>Flipbook</title>
 
   <audio id="bgMusic" loop>
@@ -14,46 +14,49 @@
 
 <body>
 
-<div class="flipbook-wrapper">
-    <div class="flipbook">
-        <div class="hard">My Pokemon Gallery <small>~ HankTheTank</small></div>
-        <div class="hard"></div>
+<div class="flipbook">
+    <div class="hard">My Pokemon Gallery <small>~ HankTheTank</small></div>
+    <div class="hard"></div>
 
-        <!-- VIDEO PAGE -->
-        <div class="page video-page">
-            <video class="video-ui" src="video1.mp4"></video>
-            <input type="range" class="seekbar" value="0">
-        </div>
-
-        <!-- IMAGE PAGES -->
-        <div><img src="a.jpg" alt=""></div>
-        <div><img src="a.jpg" alt=""></div>
-        <div><img src="b.jpg" alt=""></div>
-        <div><img src="c.jpg" alt=""></div>
-        <div><img src="d.jpg" alt=""></div>
-
-        <div class="hard"></div>
-        <div class="hard">Thank You <small>~ HankTheTank</small></div>
+    <!-- VIDEO PAGE -->
+    <div class="page video-page">
+        <video class="video-ui" src="video1.mp4"></video>
+        <input type="range" class="seekbar" value="0">
     </div>
+
+    <!-- IMAGE PAGES -->
+    <div><img src="a.jpg"/></div>
+    <div><img src="a.jpg"/></div>
+    <div><img src="b.jpg"/></div>
+    <div><img src="c.jpg"/></div>
+    <div><img src="d.jpg"/></div>
+
+    <div class="hard"></div>
+    <div class="hard">Thank You <small>~ HankTheTank</small></div>
 </div>
 
 <script src="jquery.js"></script>
 <script src="turn.js"></script>
 
+<!-- INIT FLIPBOOK -->
 <script>
-$(".flipbook").turn();
+$(".flipbook").turn({
+    display: "double",
+    acceleration: true,
+    gradients: true,
+    elevation: 50,
+});
 </script>
 
-<!-- =============== AUDIO MEMORY =============== -->
+<!-- AUDIO MEMORY -->
 <script>
 const audio = document.getElementById("bgMusic");
 
-function restoreAudioTime() {
-    const savedTime = localStorage.getItem("bgMusicTime");
-    if (savedTime) audio.currentTime = parseFloat(savedTime);
-}
+audio.addEventListener("loadedmetadata", () => {
+    const t = localStorage.getItem("bgMusicTime");
+    if (t) audio.currentTime = parseFloat(t);
+});
 
-audio.addEventListener("loadedmetadata", restoreAudioTime);
 audio.play().catch(()=>{});
 
 window.addEventListener("beforeunload", () => {
@@ -61,52 +64,42 @@ window.addEventListener("beforeunload", () => {
 });
 </script>
 
-<!-- =============== VIDEO CONTROL =============== -->
+<!-- VIDEO CONTROL -->
 <script>
 function setupAllVideos() {
-    const pages = document.querySelectorAll(".page.video-page");
+    const pages = document.querySelectorAll(".video-page");
 
     pages.forEach(page => {
         const video = page.querySelector("video");
-        const seek = page.querySelector(".seekbar");
-        const precision = 10;
+        const seek  = page.querySelector(".seekbar");
+        const precision = 10;  // 1s = 10 bước
 
         video.addEventListener("loadedmetadata", () => {
             seek.max = Math.floor(video.duration * precision);
         });
 
+        // Click -> play/pause
         video.addEventListener("click", () => {
-            if (video.paused) video.play();
-            else video.pause();
+            video.paused ? video.play() : video.pause();
         });
 
+        // Seekbar kéo -> tua video
         seek.addEventListener("input", () => {
             video.currentTime = seek.value / precision;
             video.play();
         });
 
-        function updateSeek() {
-            seek.value = Math.floor(video.currentTime * precision);
-            requestAnimationFrame(updateSeek);
+        // Auto update seekbar
+        function sync() {
+            if (!video.paused) {
+                seek.value = Math.floor(video.currentTime * precision);
+            }
+            requestAnimationFrame(sync);
         }
-        updateSeek();
+        sync();
     });
 }
-
 setupAllVideos();
-</script>
-
-<!-- =============== RESPONSIVE SCALE =============== -->
-<script>
-function scaleFlipbook() {
-    const wrapper = document.querySelector(".flipbook-wrapper");
-    const book = document.querySelector(".flipbook");
-    const scale = wrapper.clientWidth / 1123;
-    book.style.setProperty("--scale", scale);
-}
-
-scaleFlipbook();
-window.addEventListener("resize", scaleFlipbook);
 </script>
 
 </body>
