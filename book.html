@@ -20,8 +20,6 @@
     <input type="range" class="seekbar">
 </div>
 
-    
-
     <div>
       <img src="a.jpg" alt="" />
     </div>
@@ -86,7 +84,7 @@ window.addEventListener("pagehide", saveAudioTime);
 // Lưu định kỳ 2 giây/lần
 setInterval(saveAudioTime, 2000);
 </script>
-<script>
+  <script>
 function setupAllVideos() {
     const videoPages = document.querySelectorAll(".page.video-page");
 
@@ -96,24 +94,31 @@ function setupAllVideos() {
 
         if (!video || !seek) return;
 
-        // Set max seek when video loads
+        // BẮT BUỘC để video chạy được trong Chrome
+        video.muted = true;
+        video.playsInline = true;
+
         video.addEventListener("loadedmetadata", () => {
             seek.max = video.duration;
         });
 
-        // Update seekbar while video plays
-        video.addEventListener("timeupdate", () => {
-            seek.value = video.currentTime;
-        });
-
-        // Control video from seekbar
+        // Điều khiển video khi kéo seekbar
         seek.addEventListener("input", () => {
             video.currentTime = seek.value;
-            if (video.paused) video.play();
+            video.play();
         });
+
+        // UPDATE MƯỢT 60FPS – không trễ
+        function updateSeekBar() {
+            if (!video.paused) {
+                seek.value = video.currentTime;
+            }
+            requestAnimationFrame(updateSeekBar);
+        }
+        requestAnimationFrame(updateSeekBar);
     });
 
-    // Pause all videos when flipping pages
+    // Stop video khi lật trang
     $(".flipbook").bind("turning", function () {
         document.querySelectorAll("video").forEach(v => v.pause());
     });
